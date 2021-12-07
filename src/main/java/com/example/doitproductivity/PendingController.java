@@ -7,10 +7,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
@@ -40,7 +38,7 @@ public class PendingController {
     private Button showButton;
 
     @FXML
-    private ListView listView;
+    private TableView tableView;
 
     @FXML
     private User temp = new User();
@@ -107,49 +105,28 @@ public class PendingController {
 
     @FXML
     void showPending(ActionEvent event) {
-        listView.getItems().clear();
-        listView.getItems().add("Pending List :");
-        listView.getItems().add("");
         initialize(event);
+        tableView.getColumns().clear();
+        tableView.getItems().clear();
+        TableColumn<Data, String> column1 = new TableColumn("Task");
+        column1.setMinWidth(200);
+        column1.setCellValueFactory(new PropertyValueFactory("task"));
+        TableColumn<Data, Button> column2 = new TableColumn("Action");
+        column2.setCellValueFactory(new PropertyValueFactory("Btn"));
+        tableView.getColumns().add(column1);
+        tableView.getColumns().add(column2);
         DatabaseConnection db = new DatabaseConnection();
         Connection connectDb = db.getConnection();
-        ArrayList<String> list = new ArrayList<String>();
-        ArrayList<Button> btns = new ArrayList<Button>();
         String connectQuery = "Select taskname from " + temp.getUsername() + " where status = \"PENDING\"";
         try{
             Statement statement = connectDb.createStatement();
             ResultSet queryOutput = statement.executeQuery(connectQuery);
             while(queryOutput.next()){
-                list.add(queryOutput.getString("taskname"));
+                Data d = new Data(queryOutput.getString("taskname"),"COMPLETED",temp.getUsername(),"Done");
+                tableView.getItems().add(d);
             }
-            for(int i = 0; i < list.size();i++){
-                Button btn = new Button("Done");
-                int finalI = i;
-                btn.setOnAction(new EventHandler<ActionEvent>() {
-                    @Override
-                    public void handle(ActionEvent actionEvent) {
-                        try{
-                            DatabaseConnection db = new DatabaseConnection();
-                            Connection connectDb = db.getConnection();
-                            String query = "UPDATE " + temp.getUsername() + " SET status = \"COMPLETED\" WHERE taskname = \"" + list.get(finalI) + "\"";
-                            System.out.println(query);
-                            PreparedStatement preparedStmt = connectDb.prepareStatement(query);
-                            preparedStmt.execute();
-                        }catch (Exception e){
-                            e.printStackTrace();
-                        }
-
-                    }
-                });
-                btns.add(btn);
-            }
-
-        }catch(Exception e){
+        }catch (Exception e){
             e.printStackTrace();
-        }
-        for(int i = 0;i< list.size();i++){
-            listView.getItems().add(list.get(i));
-            listView.getItems().add(btns.get(i));
         }
     }
 

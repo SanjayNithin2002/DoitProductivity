@@ -1,5 +1,7 @@
 package com.example.doitproductivity;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -9,6 +11,9 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 
 import java.sql.Connection;
@@ -29,7 +34,7 @@ public class CompletedController {
     private Button completedButton;
 
     @FXML
-    private ListView listView;
+    private TableView tableView;
 
     @FXML
     private Button pendingButton;
@@ -90,48 +95,29 @@ public class CompletedController {
     @FXML
     void showCompleted(ActionEvent event) {
         initialize(event);
-        listView.getItems().clear();
-        listView.getItems().add("Completed List :");
-        listView.getItems().add("");
+        tableView.getItems().clear();
+        tableView.getColumns().clear();
+        tableView.getItems().clear();
+        TableColumn<Data, String> column1 = new TableColumn("Task");
+        column1.setMinWidth(200);
+        column1.setCellValueFactory(new PropertyValueFactory("task"));
+        TableColumn<Data, Button> column2 = new TableColumn("Action");
+        column2.setCellValueFactory(new PropertyValueFactory("Btn"));
+        tableView.getColumns().add(column1);
+        tableView.getColumns().add(column2);
         DatabaseConnection db = new DatabaseConnection();
         Connection connectDb = db.getConnection();
-        ArrayList<String> list = new ArrayList<String>();
-        ArrayList<Button> btns = new ArrayList<Button>();
         String connectQuery = "Select taskname from " + temp.getUsername() + " where status = \"COMPLETED\"";
         try{
             Statement statement = connectDb.createStatement();
             ResultSet queryOutput = statement.executeQuery(connectQuery);
             while(queryOutput.next()){
-                list.add(queryOutput.getString("taskname"));
-            }
-            for(int i = 0; i < list.size();i++){
-                Button btn = new Button("Archive");
-                int finalI = i;
-                btn.setOnAction(new EventHandler<ActionEvent>() {
-                    @Override
-                    public void handle(ActionEvent actionEvent) {
-                        try{
-                            DatabaseConnection db = new DatabaseConnection();
-                            Connection connectDb = db.getConnection();
-                            String query = "UPDATE " + temp.getUsername() + " SET status = \"ARCHIVED\" WHERE taskname = \"" + list.get(finalI) + "\"";
-                            System.out.println(query);
-                            PreparedStatement preparedStmt = connectDb.prepareStatement(query);
-                            preparedStmt.execute();
-                        }catch (Exception e){
-                            e.printStackTrace();
-                        }
+                Data d = new Data(queryOutput.getString("taskname"),"ARCHIVED",temp.getUsername(),"Archive");
 
-                    }
-                });
-                btns.add(btn);
+                tableView.getItems().add(d);
             }
-
-        }catch(Exception e){
+        }catch (Exception e){
             e.printStackTrace();
-        }
-        for(int i = 0;i< list.size();i++){
-            listView.getItems().add(list.get(i));
-            listView.getItems().add(btns.get(i));
         }
     }
 

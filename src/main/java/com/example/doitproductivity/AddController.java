@@ -36,6 +36,7 @@ public class AddController {
     @FXML
     private User temp = new User();
 
+
     @FXML
     public void initialize(ActionEvent event) {
         Node node = (Node) event.getSource();
@@ -57,6 +58,7 @@ public class AddController {
             preparedStatement.setString(2,"PENDING");
             preparedStatement.execute();
             connectDb.close();
+            taskname.setText("");
         }catch (Exception e){
             e.printStackTrace();
         }

@@ -2,8 +2,8 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
@@ -42,7 +42,7 @@
                 </AnchorPane>
             <AnchorPane prefHeight="398.0" prefWidth="348.0">
                <children>
-                  <ListView fx:id="listView" layoutX="65.0" prefHeight="398.4" prefWidth="416.8" style="-fx-background-color: #354551;" styleClass="list-cell" stylesheets="@../assets/style.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                  <TableView fx:id="tableView" layoutX="108.0" layoutY="32.0" prefHeight="398.4" prefWidth="416.8" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                </children>
             </AnchorPane>
             </items>
